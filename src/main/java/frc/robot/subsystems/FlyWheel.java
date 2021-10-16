@@ -4,32 +4,26 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+// import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class DriveTrain extends SubsystemBase {
+public class FlyWheel extends SubsystemBase {
 
-  private final WPI_TalonSRX _leftDriveTalon;
-  private final WPI_TalonSRX _righttDriveTalon;
+  private final WPI_TalonSRX _flywheelTalon;
 
-  private DifferentialDrive _diffDrive;
+  /** Creates a new FlyWheel. */
+  public FlyWheel() {
+    _flywheelTalon = new WPI_TalonSRX(Constants.FlyWheelPortNumbers.FlyWheelPort);
 
+    _flywheelTalon.configFactoryDefault();
 
-  /** Creates a new DriveTrain. */
-  public DriveTrain() {
-    _leftDriveTalon = new WPI_TalonSRX(Constants.DriveTrainPorts.LeftDriveTalonPort);
-    _righttDriveTalon = new WPI_TalonSRX(Constants.DriveTrainPorts.RightDriveTalonPort);
+    _flywheelTalon.setInverted(false);
 
-    _leftDriveTalon.setInverted(false);
-    _righttDriveTalon.setInverted(false);
-
-    _diffDrive = new DifferentialDrive(_leftDriveTalon, _righttDriveTalon);
-
-
+    _flywheelTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
   }
 
   @Override
@@ -37,11 +31,23 @@ public class DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void tankDrive(double leftSpeed, double rightSpeed) {
-    _diffDrive.tankDrive(leftSpeed, rightSpeed);
+  public void resetEncoders() {
+    _flywheelTalon.setSelectedSensorPosition(0, 0, 10);
   }
 
-  public void arcadeDrive(double xSpeed, double rotation) {
-    _diffDrive.arcadeDrive(xSpeed, rotation);
+  public double getEncoderPosition() {
+    return _flywheelTalon.getSelectedSensorPosition(0);
   }
+
+  public double getEncoderVelocityTicksPerSecond() {
+    // Originally returned ticks per 100ms, multiply by 10 to correct it.
+    return _flywheelTalon.getSensorCollection().getPulseWidthVelocity()*10.0;
+  }
+  public double getEncoderVelocityRotationsPerSecond() {
+    return (_flywheelTalon.getSensorCollection().getPulseWidthVelocity()/4096.0);
+  }
+  public double getEncoderVelocityDegreesPerSecond() {
+    return (_flywheelTalon.getSensorCollection().getPulseWidthVelocity()*10.0*360.0)/ 4096.0; // "Cross multiply"
+  }
+
 }
