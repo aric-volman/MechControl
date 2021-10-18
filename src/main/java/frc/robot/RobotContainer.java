@@ -20,15 +20,14 @@ import edu.wpi.first.wpilibj.Joystick;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
- private final Joystick joystick = new Joystick(Constants.JoystickPorts.joystick);
+  private static final Joystick joystick = new Joystick(Constants.JoystickPorts.joystick);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
   }
-  public Joystick getJoystick() {
+  public static Joystick getJoystick() {
     return joystick;
   }
   /**

@@ -6,14 +6,17 @@ package frc.robot.subsystems;
 
 // import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class FlyWheel extends SubsystemBase {
 
   private final WPI_TalonSRX _flywheelTalon;
+  private static double FlyWheelRadiusInMeters = 0.0635;
 
   /** Creates a new FlyWheel. */
   public FlyWheel() {
@@ -29,6 +32,8 @@ public class FlyWheel extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // This method now controls the flywheel with the joystick
+    _flywheelTalon.set(ControlMode.PercentOutput, RobotContainer.getJoystick().getY());
   }
 
   public void resetEncoders() {
@@ -46,8 +51,10 @@ public class FlyWheel extends SubsystemBase {
   public double getEncoderVelocityRotationsPerSecond() {
     return (_flywheelTalon.getSensorCollection().getPulseWidthVelocity()/4096.0);
   }
-  public double getEncoderVelocityDegreesPerSecond() {
-    return (_flywheelTalon.getSensorCollection().getPulseWidthVelocity()*10.0*360.0)/ 4096.0; // "Cross multiply"
+  public double getEncoderVelocityMetersPerSecond() {
+    // Ticks per 4096 times (2*pi * fly wheel radius) times 10
+    return (_flywheelTalon.getSensorCollection().getPulseWidthVelocity()/4096.0*FlyWheelRadiusInMeters*2*Math.PI*10.0);
   }
+
 
 }
